@@ -8,7 +8,9 @@ const Layout = ({ children }: ILayout) => {
   return (
     <>
       <Header />
-      <main>{children}</main>
+      <main className="m-auto min-h-screen max-w-screen-2xl px-4">
+        {children}
+      </main>
       <Footer />
     </>
   );

@@ -1,7 +1,19 @@
-import Link from "next/link";
+import Head from "next/head";
+import Featured from "../components/Featured";
+import ProductList from "../components/ProductList";
 
 const index = () => {
-  return <Link href="/products">products</Link>;
+  return (
+    <>
+      <Head>
+        <title>Pizza Restaurant</title>
+        <meta name="description" content="Best pizza shop in town" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Featured />
+      <ProductList />
+    </>
+  );
 };
 
 export default index;

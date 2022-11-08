@@ -66,7 +66,7 @@ const Footer = () => {
           </h1>
 
           <div className="flex flex-col justify-between gap-8 sm:flex-row">
-            <div className="flex flex-col gap-4">
+            <section className="flex flex-col gap-4">
               <h2 className="text-lg font-medium uppercase text-orange-400">
                 find our restaurants
               </h2>
@@ -79,8 +79,8 @@ const Footer = () => {
                   </div>
                 ))}
               </div>
-            </div>
-            <div className="flex flex-col gap-4">
+            </section>
+            <section className="flex flex-col gap-4">
               <h2 className="text-xl font-medium uppercase text-orange-400">
                 working hours
               </h2>
@@ -95,7 +95,7 @@ const Footer = () => {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </section>
           </div>
         </div>
       </div>

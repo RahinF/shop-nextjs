@@ -62,7 +62,7 @@ const Footer = () => {
 
         <div className="flex max-w-screen-sm flex-col gap-10 py-10">
           <h1 className="text-3xl font-bold uppercase">
-            Pizza is not a 'trend' it's a way of life. It's our way of life.
+            Pizza is not a &#39;trend&#39; it&#39;s a way of life. It&#39;s our way of life.
           </h1>
 
           <div className="flex flex-col justify-between gap-8 sm:flex-row">

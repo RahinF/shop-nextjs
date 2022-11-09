@@ -54,7 +54,7 @@ const UpdateProduct = ({ productId }: { productId: string }) => {
     if (isSuccess) {
       reset({ name: product.name });
     }
-  }, [product]);
+  }, [product, isSuccess, reset]);
 
   const updateProductMutation = useMutation({
     mutationFn: updateProduct,

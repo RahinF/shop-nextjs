@@ -1,10 +1,13 @@
 import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import clsx from "clsx";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import IProduct from "../../types/IProduct";
+import toPrice from "../../utils/toPrice";
 
 async function fetchProduct(id: string): Promise<IProduct> {
   return axios
@@ -73,6 +76,10 @@ const Product = () => {
     });
   };
 
+  const handleAddToCart = () => {
+    toast(`${product?.title} added to cart.`);
+  };
+
   useEffect(() => {
     if (!isSuccess) return;
     setTotalPrice(product.sizes[0].price);
@@ -82,6 +89,17 @@ const Product = () => {
     if (!isSuccess) return;
     setSelected({ size: product.sizes[0], extras: [] });
   }, [product, isSuccess]);
+
+  useEffect(() => {
+    const base = (selected.size as ISize).price;
+
+    const extras = selected.extras
+      .map((extra) => extra.price)
+      .reduce((prev, current) => prev + current, 0);
+
+    const total = base + extras;
+    setTotalPrice(total);
+  }, [selected]);
 
   if (!isSuccess) return <p>loading...</p>;
 
@@ -105,26 +123,33 @@ const Product = () => {
         <header>
           <h1 className="text-3xl font-bold uppercase">{product.title}</h1>
           <span className="text-2xl font-bold uppercase text-orange-400">
-            ${totalPrice}
+            {toPrice(totalPrice)}
           </span>
           <p className="mt-2 max-w-prose">{product.description}</p>
         </header>
         <section className="flex flex-col gap-2">
           <h2 className="text-xl font-bold">Select a size</h2>
           <div className="flex items-baseline gap-8">
-            {product.sizes.map(({ price, text }, index) => (
+            {product.sizes.map((size, index) => (
               <button
-                key={text}
-                onClick={() => handleSizeOnClick({ text, price })}
+                key={size.text}
+                onClick={() => handleSizeOnClick(size)}
                 className="flex flex-col items-center gap-2"
               >
                 <Image
                   src="/images/size.png"
-                  alt={`size ${text}`}
+                  alt={`size ${size.text}`}
                   height={50 + index * 25}
                   width={50 + index * 25}
                 />
-                <span className="badge">{text}</span>
+                <span
+                  className={clsx("badge badge-lg text-sm", {
+                    "border-primary bg-primary text-neutral":
+                      size.text === (selected.size as ISize).text,
+                  })}
+                >
+                  {size.text}
+                </span>
               </button>
             ))}
           </div>
@@ -151,7 +176,9 @@ const Product = () => {
             ))}
           </div>
         </section>
-        <button className="btn-primary btn">Add to cart</button>
+        <button className="btn-primary btn" onClick={handleAddToCart}>
+          Add to cart
+        </button>
       </div>
     </article>
   );

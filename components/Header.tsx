@@ -4,7 +4,7 @@ import { Phone, ShoppingCart } from "phosphor-react";
 
 const Header = () => {
   return (
-    <header className="sticky top-0 flex h-24 bg-orange-400 px-4 text-white">
+    <header className="sticky top-0 flex h-24 bg-orange-400 px-4 text-white z-50">
       <div className="m-auto flex w-full max-w-screen-2xl items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="h-min w-min rounded-full bg-white p-2">
@@ -32,14 +32,16 @@ const Header = () => {
           </ul>
         </nav>
 
-        <button className="rounded-full p-4 transition hover:bg-orange-600">
-          <div className="relative">
-            <ShoppingCart size={32} />
-            <div className="absolute -top-4 -right-4 grid h-6 w-6 place-items-center rounded-full bg-white text-sm font-medium text-orange-400">
-              <span>85</span>
+        <Link href="/cart">
+          <button className="btn-ghost btn-circle btn">
+            <div className="relative">
+              <ShoppingCart size={32} />
+              <div className="absolute -top-4 -right-4 grid h-6 w-6 place-items-center rounded-full bg-white text-sm font-medium text-orange-400">
+                <span>85</span>
+              </div>
             </div>
-          </div>
-        </button>
+          </button>
+        </Link>
       </div>
     </header>
   );

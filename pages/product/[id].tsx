@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import useCart from "../../store/useCart";
 import IProduct from "../../types/IProduct";
 import toPrice from "../../utils/toPrice";
 
@@ -43,6 +44,7 @@ interface ISelected {
 }
 
 const Product = () => {
+  const { addToCart } = useCart();
   const [selected, setSelected] = useState<ISelected>({ size: {}, extras: [] });
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
@@ -77,6 +79,11 @@ const Product = () => {
   };
 
   const handleAddToCart = () => {
+    if (!isSuccess) return;
+    const size = (selected.size as ISize).text;
+    const extras = selected.extras.map(extra => extra.text);
+    
+    addToCart({ id: product._id, size, extras });
     toast(`${product?.title} added to cart.`);
   };
 

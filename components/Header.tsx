@@ -1,10 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Phone, ShoppingCart } from "phosphor-react";
+import useCart from "../store/useCart";
 
 const Header = () => {
+  const { quantity } = useCart();
   return (
-    <header className="sticky top-0 flex h-24 bg-orange-400 px-4 text-white z-50">
+    <header className="sticky top-0 z-50 flex h-24 bg-orange-400 px-4 text-white">
       <div className="m-auto flex w-full max-w-screen-2xl items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="h-min w-min rounded-full bg-white p-2">
@@ -37,7 +39,7 @@ const Header = () => {
             <div className="relative">
               <ShoppingCart size={32} />
               <div className="absolute -top-4 -right-4 grid h-6 w-6 place-items-center rounded-full bg-white text-sm font-medium text-orange-400">
-                <span>85</span>
+                <span>{quantity}</span>
               </div>
             </div>
           </button>

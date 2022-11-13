@@ -14,7 +14,7 @@ export default async function handler(
     try {
       const result = await db.collection("products").find({}).toArray();
       const products = JSON.parse(JSON.stringify(result));
-      return response.status(200).json(products);
+      response.status(200).json(products);
     } catch (error) {
       response.status(500).json(error);
     }
@@ -25,7 +25,7 @@ export default async function handler(
       const { data } = request.body;
       // console.log(request.body) // use request.body with postman
       await db.collection("products").insertOne(data);
-      return response.status(201).json({ message: "Product created." });
+      response.status(201).json({ message: "Product created." });
     } catch (error) {
       response.status(500).json(error);
     }
@@ -37,7 +37,7 @@ export default async function handler(
         .collection("products")
         .deleteOne({ _id: new ObjectId(request.query.id as string) });
 
-      return response.status(200).json({ message: "Product deleted." });
+      response.status(200).json({ message: "Product deleted." });
     } catch (error) {
       response.status(500).json(error);
     }

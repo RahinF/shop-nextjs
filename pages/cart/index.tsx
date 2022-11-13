@@ -1,12 +1,49 @@
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import CartItem from "../../components/CartItem";
+import PayPalButtonWrapper from "../../components/PayPalButtonWrapper";
 import useCart from "../../store/useCart";
+import { IOrderRequest } from "../../types/IOrder";
 import toPrice from "../../utils/toPrice";
 
+async function createOrder(data: IOrderRequest) {
+  return axios.post("http://localhost:3000/api/orders", { data });
+}
+
 const Cart = () => {
-  const { products, quantity } = useCart();
+  const { products, quantity, clearCart } = useCart();
 
   const [total, setTotal] = useState<number>(0);
+
+  const router = useRouter();
+
+  const createOrderMutation = useMutation({
+    mutationFn: createOrder,
+    onSuccess: (response) => {
+      clearCart();
+      router.push(`http://localhost:3000/orders/${response.data.id}`);
+    },
+  });
+
+  const handleCreateOrder = ({
+    customer,
+    address,
+  }: {
+    customer: string;
+    address: string;
+  }) => {
+    const data: IOrderRequest = {
+      customer,
+      address,
+      products,
+      total: total,
+      status: "Payment",
+    };
+    createOrderMutation.mutate(data);
+  };
 
   return (
     <div className="flex flex-col justify-evenly gap-10 lg:flex-row">
@@ -15,7 +52,7 @@ const Cart = () => {
 
         <div className="flex flex-col gap-20">
           {products.map((product, index) => (
-            <CartItem key={index} cartItem={product} setTotal={setTotal}/>
+            <CartItem key={index} cartItem={product} setTotal={setTotal} />
           ))}
         </div>
       </article>
@@ -32,7 +69,24 @@ const Cart = () => {
           <p>{toPrice(total)}</p>
         </div>
 
-        <button className="btn-primary btn mt-10 w-full max-w-sm">pay</button>
+        <div className="mt-10 flex flex-col gap-2">
+          <PayPalScriptProvider
+            options={{
+              "client-id":
+                "AXu_5azCk9u8kmBcpZYyDDJSr09CRq9KVS_NtyLsBQm2UyywaKUU7UmAxQAdTCnorX2EUXpPSqFJqFrS",
+              components: "buttons",
+              currency: "AUD",
+              "disable-funding": "credit,card,p24",
+            }}
+          >
+            <PayPalButtonWrapper
+              amount={(total / 100).toString()}
+              showSpinner={false}
+              createOrder={handleCreateOrder}
+              disabled={!!!products.length}
+            />
+          </PayPalScriptProvider>
+        </div>
       </aside>
     </div>
   );

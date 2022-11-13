@@ -13,10 +13,10 @@ export default async function handler(
   if (method === "GET") {
     try {
       const result = await db
-        .collection("products")
+        .collection("orders")
         .findOne({ _id: new ObjectId(request.query.id as string) });
-      const product = JSON.parse(JSON.stringify(result));
-      response.status(200).json(product);
+      const order = JSON.parse(JSON.stringify(result));
+      response.status(200).json(order);
     } catch (error) {
       response.status(500).json(error);
     }

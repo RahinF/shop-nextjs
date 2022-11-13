@@ -1,41 +1,75 @@
+import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import clsx from "clsx";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { CheckCircle } from "phosphor-react";
 import { useEffect, useMemo, useState } from "react";
+import OrderItem from "../../components/OrderItem";
+import orderStatus from "../../data/orderStatus";
+import { IOrderResponse, IStatus } from "../../types/IOrder";
+import toPrice from "../../utils/toPrice";
 
-type TStatusText = "Payment" | "Preparing" | "On the way" | "Delivered";
+async function fetchOrder(id: string): Promise<IOrderResponse> {
+  return axios
+    .get(`http://localhost:3000/api/orders/${id}`)
+    .then((response) => response.data);
+}
 
-interface IStatus {
-  text: TStatusText;
-  src: string;
-  alt: string;
+export async function getServerSideProps(context: { params: { id: string } }) {
+  const { params } = context;
+
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery(["order"], () => fetchOrder(params.id));
+
+  return {
+    props: { dehydratedState: dehydrate(queryClient) },
+  };
 }
 
 const Order = () => {
-  const currentStatus: TStatusText = "On the way";
   const [completedStatus, setCompletedStatus] = useState<number>(0);
+  const [totalItems, setTotalItems] = useState<number>(0);
 
   const statuses: IStatus[] = useMemo(
-    () => [
-      { text: "Payment", src: "/images/paid.png", alt: "order paid" },
-      { text: "Preparing", src: "/images/bake.png", alt: "order preparing" },
-      { text: "On the way", src: "/images/paid.png", alt: "order on the way" },
-      {
-        text: "Delivered",
-        src: "/images/delivered.png",
-        alt: "order delivered",
-      },
-    ],
+    () => orderStatus,
     []
   );
 
+  const router = useRouter();
+  const { id } = router.query;
+
+  const { data: order, isSuccess } = useQuery(
+    ["order"],
+    () => fetchOrder(id as string),
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      enabled: !!id,
+    }
+  );
+
   useEffect(() => {
+    if (!isSuccess) return;
     const completedStatus = statuses.findIndex(
-      (status) => status.text === currentStatus
+      (status) => status.text === order.status
     );
 
     setCompletedStatus(completedStatus);
-  }, [statuses]);
+  }, [isSuccess, order, statuses]);
+
+  useEffect(() => {
+    if (!isSuccess) return;
+
+    const total = order.products
+      .map((product) => product.quantity!)
+      .reduce((prev, current) => prev + current, 0);
+
+    setTotalItems(total);
+  }, [isSuccess, order]);
+
+  if (!isSuccess) return <p>loading...</p>;
 
   return (
     <div className="flex flex-col justify-evenly gap-10 lg:flex-row">
@@ -50,9 +84,9 @@ const Order = () => {
               <td>Address</td>
             </tr>
             <tr>
-              <td>129837819237</td>
-              <td>John Doe</td>
-              <td>Elton st. 212-33 LA</td>
+              <td>{order._id}</td>
+              <td>{order.customer}</td>
+              <td>{order.address}</td>
             </tr>
           </tbody>
         </table>
@@ -84,6 +118,13 @@ const Order = () => {
             );
           })}
         </div>
+
+        <div>
+        <h2 className="mb-10 text-center text-xl font-bold uppercase">items</h2>
+          {order.products.map((product) => (
+            <OrderItem key={product.uuid} orderItem={product} />
+          ))}
+        </div>
       </div>
       <aside className="sticky top-28 flex h-min w-full max-w-xs flex-col items-stretch self-center bg-neutral p-4 text-white lg:self-start">
         <h1 className="mb-10 text-center text-xl font-bold uppercase">
@@ -91,11 +132,11 @@ const Order = () => {
         </h1>
         <div className="flex justify-between text-lg">
           <p>Items:</p>
-          <p>10</p>
+          <p>{totalItems}</p>
         </div>
         <div className="flex justify-between text-lg">
           <p>Total Price:</p>
-          <p>$200</p>
+          <p>{toPrice(order.total)}</p>
         </div>
         <button className="btn-primary btn mt-10 w-full max-w-sm">paid</button>
       </aside>

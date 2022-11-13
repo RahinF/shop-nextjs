@@ -1,9 +1,9 @@
 interface ICartProduct {
-  uuid: string;
+  uuid?: string;
   id: string;
   size: string;
   extras: string[];
-  quantity: number;
+  quantity?: number;
 }
 
 export default ICartProduct;

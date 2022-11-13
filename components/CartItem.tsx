@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import Head from "next/head";
 import Image from "next/image";
 import { Minus, Plus } from "phosphor-react";
 import { useEffect, useState } from "react";
@@ -33,13 +32,17 @@ const CartItem = ({ cartItem, setTotal }: ICartItem) => {
     }
   );
 
+  const quantity = cartItem.quantity || 1;
+
   const handleIncreaseQuantity = () => {
+    if (!cartItem.uuid) return;
     increaseQuantity(cartItem.uuid);
     setTotal((prev) => prev + unitPrice);
   };
 
   const handleDecreaseQuantity = () => {
-    if (cartItem.quantity > 1) {
+    if (!cartItem.uuid) return;
+    if (quantity > 1) {
       decreaseQuantity(cartItem.uuid);
       setTotal((prev) => prev - unitPrice);
     } else {
@@ -61,11 +64,11 @@ const CartItem = ({ cartItem, setTotal }: ICartItem) => {
       .reduce((prev, current) => prev + current, 0);
 
     const unitPrice = base + extras;
-    const totalPrice = unitPrice * cartItem.quantity;
+    const totalPrice = unitPrice * quantity;
 
     setUnitPrice(unitPrice);
     setTotalPrice(totalPrice);
-  }, [isSuccess, cartItem, product]);
+  }, [isSuccess, cartItem, product, quantity]);
 
   useEffect(() => {
     setTotal((prev) => prev + totalPrice);
@@ -76,10 +79,6 @@ const CartItem = ({ cartItem, setTotal }: ICartItem) => {
 
   return (
     <section className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-      <Head>
-        <title>Shopping Cart</title>
-        {/* add meta tags */}
-      </Head>
       <div className="flex h-56 w-56 items-center">
         <Image
           src={"/images/pizza.png"}
@@ -96,7 +95,7 @@ const CartItem = ({ cartItem, setTotal }: ICartItem) => {
         <h3 className="font-bold">Extras</h3>
         <p>{cartItem.extras.join(", ") || "none"}</p>
         <p className="mt-2 text-lg font-bold">
-          {toPrice(unitPrice * cartItem.quantity)}
+          {toPrice(unitPrice * quantity)}
         </p>
       </header>
 
@@ -107,7 +106,7 @@ const CartItem = ({ cartItem, setTotal }: ICartItem) => {
         >
           <Plus />
         </button>
-        <span className="text-lg font-bold">{cartItem.quantity}</span>
+        <span className="text-lg font-bold">{quantity}</span>
         <button
           className="btn-primary btn-circle btn"
           onClick={handleDecreaseQuantity}

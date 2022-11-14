@@ -59,8 +59,8 @@ const PayPalButtonWrapper = ({
             const shipping = details.purchase_units[0].shipping;
 
             createOrder({
-              customer: shipping.name.full_name,
-              address: shipping.address.address_line_1,
+              customer: shipping?.name?.full_name,
+              address: `${shipping?.address?.address_line_1}, ${shipping?.address?.admin_area_1}, ${shipping?.address?.postal_code}`,
             });
           });
         }}

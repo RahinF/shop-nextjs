@@ -21,4 +21,33 @@ export default async function handler(
       response.status(500).json(error);
     }
   }
+
+  if (method === "PUT") {
+    const { data } = request.body;
+    try {
+      await db
+        .collection("products")
+        .updateOne(
+          { _id: new ObjectId(request.query.id as string) },
+          { $set: data }
+        );
+      return response.status(200).json({ message: "Product updated." });
+    } catch (error) {
+      response.status(500).json(error);
+    }
+  }
+
+  if (method === "DELETE") {
+    try {
+      const result = await db
+        .collection("products")
+        .findOneAndDelete({ _id: new ObjectId(request.query.id as string) });
+
+      const title = result.value?.title;
+
+      response.status(200).json(title);
+    } catch (error) {
+      response.status(500).json(error);
+    }
+  }
 }

@@ -1,17 +1,15 @@
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import CartItem from "../../components/CartItem";
 import PayPalButtonWrapper from "../../components/PayPalButtonWrapper";
+import { createOrder } from "../../services/order";
 import useCart from "../../store/useCart";
 import { IOrderRequest } from "../../types/IOrder";
 import toPrice from "../../utils/toPrice";
 
-async function createOrder(data: IOrderRequest) {
-  return axios.post("http://localhost:3000/api/orders", { data });
-}
+
 
 const Cart = () => {
   const { products, quantity, clearCart } = useCart();

@@ -10,7 +10,7 @@ import Layout from "../components/Layout";
 import useHasHydrated from "../hooks/useHasHydrated";
 import "../styles/globals.css";
 
-export default function App({ Component, pageProps }: AppProps) {
+const App = ({ Component, pageProps }: AppProps) => {
   const [queryClient] = useState(() => new QueryClient());
   const hasHydrated = useHasHydrated();
 
@@ -26,4 +26,5 @@ export default function App({ Component, pageProps }: AppProps) {
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
-}
+};
+export default App;

@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
 import clientPromise from "../../../lib/mongodb";
 
@@ -26,18 +25,6 @@ export default async function handler(
       // console.log(request.body) // use request.body with postman
       await db.collection("products").insertOne(data);
       response.status(201).json({ message: "Product created." });
-    } catch (error) {
-      response.status(500).json(error);
-    }
-  }
-
-  if (method === "DELETE") {
-    try {
-      await db
-        .collection("products")
-        .deleteOne({ _id: new ObjectId(request.query.id as string) });
-
-      response.status(200).json({ message: "Product deleted." });
     } catch (error) {
       response.status(500).json(error);
     }

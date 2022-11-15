@@ -1,32 +1,13 @@
 import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import clsx from "clsx";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { fetchProduct } from "../../services/product";
 import useCart from "../../store/useCart";
-import IProduct from "../../types/IProduct";
 import toPrice from "../../utils/toPrice";
-
-async function fetchProduct(id: string): Promise<IProduct> {
-  return axios
-    .get(`http://localhost:3000/api/products/${id}`)
-    .then((response) => response.data);
-}
-
-export async function getServerSideProps(context: { params: { id: string } }) {
-  const { params } = context;
-
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery(["product"], () => fetchProduct(params.id));
-
-  return {
-    props: { dehydratedState: dehydrate(queryClient) },
-  };
-}
 
 interface IExtra {
   text: string;
@@ -81,8 +62,8 @@ const Product = () => {
   const handleAddToCart = () => {
     if (!isSuccess) return;
     const size = (selected.size as ISize).text;
-    const extras = selected.extras.map(extra => extra.text);
-    
+    const extras = selected.extras.map((extra) => extra.text);
+
     addToCart({ id: product._id, size, extras });
     toast(`${product?.title} added to cart.`);
   };
@@ -189,6 +170,20 @@ const Product = () => {
       </div>
     </article>
   );
+};
+
+export const getServerSideProps = async (context: {
+  params: { id: string };
+}) => {
+  const { params } = context;
+
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery(["product"], () => fetchProduct(params.id));
+
+  return {
+    props: { dehydratedState: dehydrate(queryClient) },
+  };
 };
 
 export default Product;

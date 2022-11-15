@@ -21,4 +21,18 @@ export default async function handler(
       response.status(500).json(error);
     }
   }
+  if (method === "PUT") {
+    const { status } = request.body;
+    try {
+      await db
+        .collection("orders")
+        .updateOne(
+          { _id: new ObjectId(request.query.id as string) },
+          { $set: { status } }
+        );
+      return response.status(200).json({ message: "Order updated." });
+    } catch (error) {
+      response.status(500).json(error);
+    }
+  }
 }

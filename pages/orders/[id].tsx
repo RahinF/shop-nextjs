@@ -1,5 +1,4 @@
 import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import clsx from "clsx";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -7,35 +6,15 @@ import { CheckCircle } from "phosphor-react";
 import { useEffect, useMemo, useState } from "react";
 import OrderItem from "../../components/OrderItem";
 import orderStatus from "../../data/orderStatus";
-import { IOrderResponse, IStatus } from "../../types/IOrder";
+import { fetchOrder } from "../../services/order";
+import { IStatus } from "../../types/IOrder";
 import toPrice from "../../utils/toPrice";
-
-async function fetchOrder(id: string): Promise<IOrderResponse> {
-  return axios
-    .get(`http://localhost:3000/api/orders/${id}`)
-    .then((response) => response.data);
-}
-
-export async function getServerSideProps(context: { params: { id: string } }) {
-  const { params } = context;
-
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery(["order"], () => fetchOrder(params.id));
-
-  return {
-    props: { dehydratedState: dehydrate(queryClient) },
-  };
-}
 
 const Order = () => {
   const [completedStatus, setCompletedStatus] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
 
-  const statuses: IStatus[] = useMemo(
-    () => orderStatus,
-    []
-  );
+  const statuses: IStatus[] = useMemo(() => orderStatus, []);
 
   const router = useRouter();
   const { id } = router.query;
@@ -120,7 +99,7 @@ const Order = () => {
         </div>
 
         <div>
-        <h2 className="mb-10 text-center text-xl font-bold uppercase">items</h2>
+          <h2 className="my-10 text-xl font-bold uppercase">items</h2>
           {order.products.map((product) => (
             <OrderItem key={product.uuid} orderItem={product} />
           ))}
@@ -142,6 +121,20 @@ const Order = () => {
       </aside>
     </div>
   );
+};
+
+export const getServerSideProps = async (context: {
+  params: { id: string };
+}) => {
+  const { params } = context;
+
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery(["order"], () => fetchOrder(params.id));
+
+  return {
+    props: { dehydratedState: dehydrate(queryClient) },
+  };
 };
 
 export default Order;

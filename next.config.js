@@ -6,6 +6,16 @@ const nextConfig = {
     locales: ['en'],
     defaultLocale: 'en',
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**/image/upload/**/products/**',
+      },
+    ],
+  },
 }
 
 module.exports = nextConfig

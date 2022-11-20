@@ -1,11 +1,13 @@
-import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
+import { dehydrate, QueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
+import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { CheckCircle } from "phosphor-react";
 import { useEffect, useMemo, useState } from "react";
 import OrderItem from "../../components/OrderItem";
 import orderStatus from "../../data/orderStatus";
+import useOrder from "../../hooks/useOrder";
 import { fetchOrder } from "../../services/order";
 import { IStatus } from "../../types/IOrder";
 import toPrice from "../../utils/toPrice";
@@ -19,39 +21,35 @@ const Order = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const { data: order, isSuccess } = useQuery(
-    ["order"],
-    () => fetchOrder(id as string),
-    {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      enabled: !!id,
-    }
-  );
+  const { order } = useOrder(id as string);
 
   useEffect(() => {
-    if (!isSuccess) return;
+    if (!order) return;
     const completedStatus = statuses.findIndex(
       (status) => status.text === order.status
     );
 
     setCompletedStatus(completedStatus);
-  }, [isSuccess, order, statuses]);
+  }, [order, statuses]);
 
   useEffect(() => {
-    if (!isSuccess) return;
+    if (!order) return;
 
     const total = order.products
       .map((product) => product.quantity!)
       .reduce((prev, current) => prev + current, 0);
 
     setTotalItems(total);
-  }, [isSuccess, order]);
+  }, [order]);
 
-  if (!isSuccess) return <p>loading...</p>;
+  if (!order) return <p>loading...</p>;
 
   return (
     <div className="flex flex-col justify-evenly gap-10 lg:flex-row">
+       <Head>
+            <title>Order Summary</title>
+        </Head>
+
       <div>
         <h1 className="text-3xl font-bold uppercase">order summary</h1>
 

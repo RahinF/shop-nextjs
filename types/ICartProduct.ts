@@ -1,7 +1,7 @@
 interface ICartProduct {
   uuid?: string;
   id: string;
-  size: string;
+  base: string;
   extras: string[];
   quantity?: number;
 }

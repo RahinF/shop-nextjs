@@ -19,7 +19,7 @@ export const updateOrderStatus = async ({
 }: {
   id: string;
   status: string;
-}) => {
+}): Promise<{ message: string }> => {
   return axios
     .put(`http://localhost:3000/api/orders/${id}`, { status })
     .then((response) => response.data);

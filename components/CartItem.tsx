@@ -1,18 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import Image from "next/image";
 import { Minus, Plus } from "phosphor-react";
 import { useEffect, useState } from "react";
+import useProduct from "../hooks/useProduct";
 import useCart from "../store/useCart";
 import ICartProduct from "../types/ICartProduct";
-import IProduct from "../types/IProduct";
 import toPrice from "../utils/toPrice";
-
-async function fetchProduct(id: string): Promise<IProduct> {
-  return axios
-    .get(`http://localhost:3000/api/products/${id}`)
-    .then((response) => response.data);
-}
 
 interface ICartItem {
   cartItem: ICartProduct;
@@ -22,15 +14,8 @@ interface ICartItem {
 const CartItem = ({ cartItem, setTotal }: ICartItem) => {
   const { increaseQuantity, decreaseQuantity, removeFromCart } = useCart();
   const [unitPrice, setUnitPrice] = useState<number>(0);
-  const [totalPrice, setTotalPrice] = useState<number>(0);
-  const { data: product, isSuccess } = useQuery(
-    ["product"],
-    () => fetchProduct(cartItem.id as string),
-    {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-    }
-  );
+
+  const { product } = useProduct(cartItem.id);
 
   const quantity = cartItem.quantity || 1;
 
@@ -51,10 +36,12 @@ const CartItem = ({ cartItem, setTotal }: ICartItem) => {
   };
 
   useEffect(() => {
-    if (!isSuccess) return;
+    if (!product) return;
 
-    const base = product.sizes.find((size) => size.text === cartItem.size)
-      ?.price!;
+    const basePrice = product.price;
+    const selectedBase = product.bases.find(
+      (base) => base.text === cartItem.base
+    )?.price!;
 
     const extras: number = cartItem.extras
       .map((extra) => {
@@ -63,19 +50,17 @@ const CartItem = ({ cartItem, setTotal }: ICartItem) => {
       })
       .reduce((prev, current) => prev + current, 0);
 
-    const unitPrice = base + extras;
+    const unitPrice = basePrice + selectedBase + extras;
     const totalPrice = unitPrice * quantity;
 
     setUnitPrice(unitPrice);
-    setTotalPrice(totalPrice);
-  }, [isSuccess, cartItem, product, quantity]);
 
-  useEffect(() => {
     setTotal((prev) => prev + totalPrice);
-    return () => setTotal((prev) => prev - totalPrice);
-  }, [setTotal, totalPrice]);
 
-  if (!isSuccess) return <p>loading...</p>;
+    return () => setTotal((prev) => prev - totalPrice);
+  }, [setTotal, cartItem, product]);
+
+  if (!product) return <p>loading...</p>;
 
   return (
     <section className="flex flex-col items-center justify-between gap-4 sm:flex-row">
@@ -89,8 +74,8 @@ const CartItem = ({ cartItem, setTotal }: ICartItem) => {
         />
       </div>
       <header className="w-full max-w-xs">
-        <h2 className="text-lg font-bold uppercase text-orange-400">
-          {cartItem.size} {product.title}
+        <h2 className="text-lg font-bold uppercase text-primary">
+          {cartItem.base} {product.title}
         </h2>
         <h3 className="font-bold">Extras</h3>
         <p>{cartItem.extras.join(", ") || "none"}</p>

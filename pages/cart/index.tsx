@@ -1,32 +1,22 @@
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
-import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import CartItem from "../../components/CartItem";
 import PayPalButtonWrapper from "../../components/PayPalButtonWrapper";
-import { createOrder } from "../../services/order";
+import useOrder from "../../hooks/useOrder";
 import useCart from "../../store/useCart";
 import { IOrderRequest } from "../../types/IOrder";
 import toPrice from "../../utils/toPrice";
 
-
-
 const Cart = () => {
+  const router = useRouter();
   const { products, quantity, clearCart } = useCart();
+  const { createOrderMutation } = useOrder();
 
   const [total, setTotal] = useState<number>(0);
 
-  const router = useRouter();
-
-  const createOrderMutation = useMutation({
-    mutationFn: createOrder,
-    onSuccess: (response) => {
-      clearCart();
-      router.push(`http://localhost:3000/orders/${response.data.id}`);
-    },
-  });
-
-  const handleCreateOrder = ({
+  const handleCreateOrder = async ({
     customer,
     address,
   }: {
@@ -40,7 +30,13 @@ const Cart = () => {
       total: total,
       status: "Payment",
     };
-    createOrderMutation.mutate(data);
+    try {
+      const response = await createOrderMutation.mutateAsync(data);
+      clearCart();
+      router.push(`http://localhost:3000/orders/${response.data.id}`);
+    } catch (error) {
+      toast.error("Something went wrong...");
+    }
   };
 
   return (

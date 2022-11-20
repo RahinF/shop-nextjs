@@ -22,7 +22,6 @@ export default async function handler(
   if (method === "POST") {
     try {
       const { data } = request.body;
-      // console.log(request.body) // use request.body with postman
       await db.collection("products").insertOne(data);
       response.status(201).json({ message: "Product created." });
     } catch (error) {

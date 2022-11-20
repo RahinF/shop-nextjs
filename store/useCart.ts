@@ -23,7 +23,7 @@ const useCart = create(
           const duplicateItem = state.products.find(
             (p) =>
               p.id === product.id &&
-              p.size === product.size &&
+              p.base === product.base &&
               p.extras.length === product.extras.length &&
               p.extras.every((extra) => product.extras.includes(extra))
           );

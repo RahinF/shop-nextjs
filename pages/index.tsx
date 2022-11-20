@@ -1,14 +1,12 @@
-import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
+import { dehydrate, QueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import Featured from "../components/Featured";
 import ProductList from "../components/ProductList";
+import useProduct from "../hooks/useProduct";
 import { fetchProducts } from "../services/product";
 
 const Home = () => {
-  const { data: products } = useQuery(["products"], fetchProducts, {
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
+  const { products } = useProduct();
 
   return (
     <>

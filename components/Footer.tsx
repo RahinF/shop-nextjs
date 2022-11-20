@@ -1,50 +1,6 @@
 import Image from "next/image";
-
-const openingTimes: { day: string; hours: string }[] = [
-  {
-    day: "Monday",
-    hours: "11am - 11pm",
-  },
-  {
-    day: "Tuesday",
-    hours: "11am - 11pm",
-  },
-  {
-    day: "Wednesday",
-    hours: "11am - 11pm",
-  },
-  {
-    day: "Thursday",
-    hours: "11am - 11pm",
-  },
-  {
-    day: "Friday",
-    hours: "11am - 2am",
-  },
-  {
-    day: "Saturday",
-    hours: "11am - 12am",
-  },
-  {
-    day: "Sunday",
-    hours: "1am - 11pm",
-  },
-];
-
-const restaurantLocations: { address: string; phone: string }[] = [
-  {
-    address: "26 Olga Street, Bendigo, 3550, Australia",
-    phone: "03 9123 4567",
-  },
-  {
-    address: "9 Ellery Place, Wollongong, 2500, Australia",
-    phone: "03 9432 5325",
-  },
-  {
-    address: "19 Coorabie Road, Ballarat, 3350, Australia",
-    phone: "03 9756 1034",
-  },
-];
+import openingTimes from "../data/openingTimes";
+import restaurantLocations from "../data/restaurantLocations";
 
 const Footer = () => {
   return (
@@ -62,12 +18,13 @@ const Footer = () => {
 
         <div className="flex max-w-screen-sm flex-col gap-10 py-10">
           <h1 className="text-3xl font-bold uppercase">
-            Pizza is not a &#39;trend&#39; it&#39;s a way of life. It&#39;s our way of life.
+            Pizza is not a &#39;trend&#39; it&#39;s a way of life. It&#39;s our
+            way of life.
           </h1>
 
           <div className="flex flex-col justify-between gap-8 sm:flex-row">
             <section className="flex flex-col gap-4">
-              <h2 className="text-lg font-medium uppercase text-orange-400">
+              <h2 className="text-lg font-medium uppercase text-primary">
                 find our restaurants
               </h2>
 
@@ -81,7 +38,7 @@ const Footer = () => {
               </div>
             </section>
             <section className="flex flex-col gap-4">
-              <h2 className="text-xl font-medium uppercase text-orange-400">
+              <h2 className="text-xl font-medium uppercase text-primary">
                 working hours
               </h2>
 

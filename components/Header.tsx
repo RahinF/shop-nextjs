@@ -6,11 +6,13 @@ import useCart from "../store/useCart";
 const Header = () => {
   const { quantity } = useCart();
   return (
-    <header className="sticky top-0 z-50 flex h-24 bg-orange-400 px-4 text-white">
+    <header className="sticky top-0 z-50 flex h-24 bg-primary px-4 text-white">
       <div className="m-auto flex w-full max-w-screen-2xl items-center justify-between">
+
+        
         <div className="flex items-center gap-4">
           <div className="h-min w-min rounded-full bg-white p-2">
-            <Phone size={32} className="text-orange-400" />
+            <Phone size={32} className="text-primary" />
           </div>
           <div>
             <div className="text-xs font-medium uppercase">order now!</div>
@@ -18,27 +20,17 @@ const Header = () => {
           </div>
         </div>
 
-        <nav className="flex font-medium">
-          <ul className="flex items-center gap-4">
-            <li>Homepage</li>
-            <li>Products</li>
-            <li>Menu</li>
-          </ul>
+        <nav>
           <Link href="/">
             <Image src="/images/logo.png" alt="logo" width={160} height={69} />
           </Link>
-          <ul className="flex items-center gap-4">
-            <li>Events</li>
-            <li>Blog</li>
-            <li>Contact</li>
-          </ul>
         </nav>
 
         <Link href="/cart">
           <button className="btn-ghost btn-circle btn">
-            <div className="relative">
+            <div className="indicator">
               <ShoppingCart size={32} />
-              <div className="absolute -top-4 -right-4 grid h-6 w-6 place-items-center rounded-full bg-white text-sm font-medium text-orange-400">
+              <div className="indicator-item badge border-none bg-white text-sm font-medium text-primary">
                 <span>{quantity}</span>
               </div>
             </div>

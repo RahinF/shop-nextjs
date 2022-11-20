@@ -1,5 +1,5 @@
 import axios from "axios";
-import IProduct, { IProductRequest } from "../types/IProduct";
+import IProduct, { ICreateProduct, IProductRequest } from "../types/IProduct";
 
 export const fetchProducts = async (): Promise<IProduct[]> => {
   return axios
@@ -10,6 +10,12 @@ export const fetchProducts = async (): Promise<IProduct[]> => {
 export const fetchProduct = async (id: string): Promise<IProduct> => {
   return axios
     .get(`http://localhost:3000/api/products/${id}`)
+    .then((response) => response.data);
+};
+
+export const createProduct = async (data: ICreateProduct) => {
+  return axios
+    .post(`http://localhost:3000/api/products`, { data })
     .then((response) => response.data);
 };
 

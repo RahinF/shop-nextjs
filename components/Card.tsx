@@ -21,11 +21,11 @@ const Card = ({ product }: ICard) => {
           />
         </div>
         <header className="mt-4 text-center">
-          <h1 className="text-lg font-bold uppercase text-orange-400">
+          <h1 className="text-lg font-bold uppercase text-primary">
             {product.title}
           </h1>
           <span className="text-lg font-bold">
-            {toPrice(product.sizes[0].price)}
+            {toPrice(product.price)}
           </span>
           <p className="mt-2">{product.description}</p>
         </header>

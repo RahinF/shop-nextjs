@@ -1,10 +1,11 @@
-import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
+import { dehydrate, QueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import useProduct from "../../hooks/useProduct";
 import { fetchProduct } from "../../services/product";
 import useCart from "../../store/useCart";
 import toPrice from "../../utils/toPrice";
@@ -14,36 +15,28 @@ interface IExtra {
   price: number;
 }
 
-interface ISize {
+interface IBase {
   text: string;
   price: number;
 }
 
 interface ISelected {
-  size: ISize | {};
+  base: IBase | {};
   extras: IExtra[] | [];
 }
 
 const Product = () => {
   const { addToCart } = useCart();
-  const [selected, setSelected] = useState<ISelected>({ size: {}, extras: [] });
+  const [selected, setSelected] = useState<ISelected>({ base: {}, extras: [] });
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
   const router = useRouter();
   const { id } = router.query;
 
-  const { data: product, isSuccess } = useQuery(
-    ["product"],
-    () => fetchProduct(id as string),
-    {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      enabled: !!id,
-    }
-  );
+  const { product } = useProduct(id as string);
 
-  const handleSizeOnClick = (size: ISize) => {
-    setSelected((prev) => ({ ...prev, size }));
+  const handleBaseOnClick = (base: IBase) => {
+    setSelected((prev) => ({ ...prev, base }));
   };
 
   const handleExtrasOnChange = (extra: IExtra, isChecked: boolean) => {
@@ -60,36 +53,34 @@ const Product = () => {
   };
 
   const handleAddToCart = () => {
-    if (!isSuccess) return;
-    const size = (selected.size as ISize).text;
+    if (!product) return;
+    const base = (selected.base as IBase).text;
     const extras = selected.extras.map((extra) => extra.text);
 
-    addToCart({ id: product._id, size, extras });
-    toast(`${product?.title} added to cart.`);
+    addToCart({ id: product._id, base, extras });
+    toast.success(`${product.title} added to cart.`);
   };
 
+  // set base on render
   useEffect(() => {
-    if (!isSuccess) return;
-    setTotalPrice(product.sizes[0].price);
-  }, [product, isSuccess]);
+    if (!product) return;
+    setSelected({ base: product.bases[0], extras: [] });
+  }, [product]);
 
   useEffect(() => {
-    if (!isSuccess) return;
-    setSelected({ size: product.sizes[0], extras: [] });
-  }, [product, isSuccess]);
-
-  useEffect(() => {
-    const base = (selected.size as ISize).price;
+    if (!product) return;
+    const basePrice = product.price;
+    const selectedBase = (selected.base as IBase).price;
 
     const extras = selected.extras
       .map((extra) => extra.price)
       .reduce((prev, current) => prev + current, 0);
 
-    const total = base + extras;
+    const total = basePrice + selectedBase + extras;
     setTotalPrice(total);
-  }, [selected]);
+  }, [product, selected]);
 
-  if (!isSuccess) return <p>loading...</p>;
+  if (!product) return <p>loading...</p>;
 
   return (
     <article className="flex flex-col items-center lg:flex-row lg:justify-evenly lg:gap-10">
@@ -110,34 +101,28 @@ const Product = () => {
       <div className="flex flex-col gap-10">
         <header>
           <h1 className="text-3xl font-bold uppercase">{product.title}</h1>
-          <span className="text-2xl font-bold uppercase text-orange-400">
+          <span className="text-2xl font-bold uppercase text-primary">
             {toPrice(totalPrice)}
           </span>
           <p className="mt-2 max-w-prose">{product.description}</p>
         </header>
         <section className="flex flex-col gap-2">
-          <h2 className="text-xl font-bold">Select a size</h2>
-          <div className="flex items-baseline gap-8">
-            {product.sizes.map((size, index) => (
-              <button
-                key={size.text}
-                onClick={() => handleSizeOnClick(size)}
-                className="flex flex-col items-center gap-2"
-              >
-                <Image
-                  src="/images/size.png"
-                  alt={`size ${size.text}`}
-                  height={50 + index * 25}
-                  width={50 + index * 25}
-                />
-                <span
-                  className={clsx("badge badge-lg text-sm", {
-                    "border-primary bg-primary text-neutral":
-                      size.text === (selected.size as ISize).text,
-                  })}
+          <h2 className="text-xl font-bold">Select a base</h2>
+          <div className="flex gap-8 flex-wrap">
+            {product.bases.map((base) => (
+              <button key={base.text} onClick={() => handleBaseOnClick(base)}>
+                <div
+                  className={clsx(
+                    "flex h-40 w-40 flex-col justify-center rounded border",
+                    {
+                      "border-primary bg-primary text-white":
+                        base.text === (selected.base as IBase).text,
+                    }
+                  )}
                 >
-                  {size.text}
-                </span>
+                  <p>{base.text}</p>
+                  <p className="font-bold">{toPrice(base.price)}+</p>
+                </div>
               </button>
             ))}
           </div>
@@ -146,9 +131,12 @@ const Product = () => {
         <section className="flex flex-col gap-2">
           <h2 className="text-xl font-bold">Select additional ingredients</h2>
 
-          <div className="flex gap-4">
+          <div>
             {product.extras.map((extra) => (
-              <div className="flex items-center gap-2" key={extra.text}>
+              <div
+                className="flex w-full max-w-xs items-center gap-2"
+                key={extra.text}
+              >
                 <input
                   type="checkbox"
                   id={extra.text}
@@ -157,8 +145,12 @@ const Product = () => {
                     handleExtrasOnChange(extra, event.target.checked)
                   }
                 />
-                <label htmlFor={extra.text} className="label capitalize">
-                  {extra.text}
+                <label
+                  htmlFor={extra.text}
+                  className="label w-full justify-between capitalize"
+                >
+                  <span>{extra.text}</span>
+                  <span>{toPrice(extra.price)}</span>
                 </label>
               </div>
             ))}

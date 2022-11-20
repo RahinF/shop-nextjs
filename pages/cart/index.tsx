@@ -1,4 +1,5 @@
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -41,6 +42,14 @@ const Cart = () => {
 
   return (
     <div className="flex flex-col justify-evenly gap-10 lg:flex-row">
+      <Head>
+        <title>Cart</title>
+        <meta
+          name="description"
+          content="shopping cart containing products the user wishes to buy"
+        />
+      </Head>
+
       <article className="flex w-full max-w-screen-md flex-col gap-10">
         <h1 className="text-3xl font-bold uppercase">Shopping cart</h1>
 
@@ -66,8 +75,7 @@ const Cart = () => {
         <div className="mt-10 flex flex-col gap-2">
           <PayPalScriptProvider
             options={{
-              "client-id":
-                "AXu_5azCk9u8kmBcpZYyDDJSr09CRq9KVS_NtyLsBQm2UyywaKUU7UmAxQAdTCnorX2EUXpPSqFJqFrS",
+              "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID as string,
               components: "buttons",
               currency: "AUD",
               "disable-funding": "credit,card,p24",

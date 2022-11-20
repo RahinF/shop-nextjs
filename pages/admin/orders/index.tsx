@@ -1,4 +1,5 @@
 import { dehydrate, QueryClient } from "@tanstack/react-query";
+import Head from "next/head";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import orderStatus from "../../../data/orderStatus";
@@ -30,6 +31,11 @@ const Orders = () => {
 
   return (
     <div className="flex flex-col gap-4 overflow-x-auto">
+      <Head>
+        <title>Admin - Orders</title>
+        <meta name="description" content="shows orders and actions to create and modify them" />
+      </Head>
+
       <header>
         <h1 className="text-3xl font-bold uppercase">orders</h1>
       </header>

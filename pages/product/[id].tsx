@@ -86,7 +86,10 @@ const Product = () => {
     <article className="flex flex-col items-center lg:flex-row lg:justify-evenly lg:gap-10">
       <Head>
         <title>{product.title}</title>
-        {/* add meta tag */}
+        <meta
+          name="description"
+          content={`${product.title} product page`}
+        />
       </Head>
       <div>
         <Image
@@ -98,7 +101,7 @@ const Product = () => {
         />
       </div>
 
-      <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-10 max-w-xl">
         <header>
           <h1 className="text-3xl font-bold uppercase">{product.title}</h1>
           <span className="text-2xl font-bold uppercase text-primary">
@@ -129,7 +132,7 @@ const Product = () => {
         </section>
 
         <section className="flex flex-col gap-2">
-          <h2 className="text-xl font-bold">Select additional ingredients</h2>
+          <h2 className="text-xl font-bold">Select extras</h2>
 
           <div>
             {product.extras.map((extra) => (

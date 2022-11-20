@@ -23,10 +23,16 @@ const OrderItem = ({ orderItem }: IOrderItem) => {
       </div>
       <header className="w-full max-w-xs">
         <h2 className="text-lg font-bold uppercase text-primary">
-          {orderItem.quantity} {orderItem.base} {product.title}
+          {orderItem.quantity} x {product.title}
         </h2>
-        <h3 className="font-bold">Extras</h3>
-        <p>{orderItem.extras.join(", ") || "none"}</p>
+        <p className="capitalize">
+          <span className="font-bold">base:</span> {orderItem.base}
+        </p>
+
+        <p className="max-w-prose">
+          <span className="font-bold">Extras:</span>{" "}
+          {orderItem.extras.join(", ") || "none"}
+        </p>
       </header>
     </section>
   );

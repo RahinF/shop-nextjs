@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import clsx from "clsx";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { Warning } from "phosphor-react";
 import { useState } from "react";
@@ -42,7 +43,15 @@ const Login = () => {
   };
 
   return (
-    <main className="grid min-h-screen place-items-center p-4">
+    <div className="grid min-h-screen place-items-center p-4">
+      <Head>
+        <title>Admin Login</title>
+        <meta
+          name="description"
+          content="login to access admin actions"
+        />
+      </Head>
+
       <div className="flex w-full max-w-md flex-col items-center border py-10 px-4">
         <h1 className="mb-6 text-3xl font-bold">Login</h1>
 
@@ -144,7 +153,7 @@ const Login = () => {
           </button>
         </form>
       </div>
-    </main>
+    </div>
   );
 };
 

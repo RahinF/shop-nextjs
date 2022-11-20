@@ -46,9 +46,13 @@ const Order = () => {
 
   return (
     <div className="flex flex-col justify-evenly gap-10 lg:flex-row">
-       <Head>
-            <title>Order Summary</title>
-        </Head>
+      <Head>
+        <title>Order Summary</title>
+        <meta
+          name="description"
+          content="order summary containing user purchases"
+        />
+      </Head>
 
       <div>
         <h1 className="text-3xl font-bold uppercase">order summary</h1>
@@ -115,7 +119,9 @@ const Order = () => {
           <p>Total Price:</p>
           <p>{toPrice(order.total)}</p>
         </div>
-        <button className="btn-primary btn mt-10 w-full max-w-sm">paid</button>
+        <div className="mt-10 grid place-items-center rounded bg-primary p-3 font-bold uppercase">
+          paid
+        </div>
       </aside>
     </div>
   );

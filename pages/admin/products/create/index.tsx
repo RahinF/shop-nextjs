@@ -1,8 +1,11 @@
+import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { Warning } from "phosphor-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import Extra from "../../../../components/ManageProduct/Extra";
+import toast from "react-hot-toast";
+import CreateProductItem from "../../../../components/CreateProductItem";
 import useFileUpload from "../../../../hooks/useFileUpload";
 import useProduct from "../../../../hooks/useProduct";
 
@@ -18,9 +21,7 @@ interface ICreatePostForm {
   price: number;
 }
 
-const AddProduct = () => {
-  const nameRef = useRef<HTMLInputElement>(null);
-
+const CreateProduct = () => {
   const router = useRouter();
 
   const {
@@ -85,25 +86,26 @@ const AddProduct = () => {
       await createProductMutation.mutateAsync(product);
 
       router.push("/admin/products");
-    } catch (error) {}
-  };
-
-  useEffect(() => {
-    if (nameRef.current) {
-      nameRef.current.focus();
+    } catch (error) {
+      toast.error("Failed to create product");
     }
-  }, []);
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <Head>
+        <title>Admin - Create Product</title>
+        <meta name="description" content="create new product form" />
+      </Head>
+
       <header className="flex justify-between">
         <h1 className="text-3xl font-bold uppercase">add a new product</h1>
         <button className="btn-primary btn">create</button>
       </header>
 
       <div className="flex flex-col gap-4 lg:flex-row">
-        <div>
-          <div className="flex flex-col gap-2">
+        <div className="flex basis-1/2 flex-col gap-4">
+          <div className="flex flex-col">
             <label htmlFor="title" className="label font-medium capitalize">
               title
             </label>
@@ -116,11 +118,14 @@ const AddProduct = () => {
               })}
             />
             {errors.title && (
-              <p className="mt-2 text-error">{errors.title.message}</p>
+              <span className="mt-2 flex items-center gap-2 text-sm text-error">
+                <Warning size={16} weight="fill" />
+                {errors.title.message}
+              </span>
             )}
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col">
             <label
               htmlFor="description"
               className="label font-medium capitalize"
@@ -129,19 +134,23 @@ const AddProduct = () => {
             </label>
             <textarea
               id="description"
+              rows={4}
               className="textarea-bordered textarea w-full"
               {...register("description", {
                 required: "Description is required.",
               })}
             />
             {errors.description && (
-              <p className="text-error">{errors.description.message}</p>
+              <span className="mt-2 flex items-center gap-2 text-sm text-error">
+                <Warning size={16} weight="fill" />
+                {errors.description.message}
+              </span>
             )}
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col">
             <label
-              htmlFor="base-price"
+              htmlFor="starting-base-price"
               className="label font-medium capitalize"
             >
               base price
@@ -149,21 +158,28 @@ const AddProduct = () => {
             <div className="input-bordered input flex items-center">
               <span className="px-2">$</span>
               <input
-                id="base-price"
+                id="starting-base-price"
                 className="h-full w-full"
                 type="number"
                 step="0.01"
+                min={0}
                 {...register("price", {
                   required: "Base price is required.",
                 })}
               />
             </div>
             {errors.price && (
-              <p className="text-error">{errors.price.message}</p>
+              <span className="mt-2 flex items-center gap-2 text-sm text-error">
+                <Warning size={16} weight="fill" />
+                {errors.price.message}
+              </span>
             )}
           </div>
 
-          <label htmlFor="image">
+          <div className="flex flex-col">
+            <label htmlFor="image" className="label font-medium capitalize">
+              image
+            </label>
             <input
               id="image"
               type="file"
@@ -175,26 +191,31 @@ const AddProduct = () => {
             />
 
             {filePreview && (
-              <Image
-                src={filePreview}
-                alt="image preview"
-                width={600}
-                height={400}
-              />
+              <div className="mx-auto mt-4">
+                <Image
+                  src={filePreview}
+                  alt="image preview"
+                  width={600}
+                  height={400}
+                />
+              </div>
             )}
-          </label>
-          {errors.file && (
-            <p className="mt-2 text-error">{errors.file.message}</p>
-          )}
+
+            {errors.file && (
+              <span className="mt-2 flex items-center gap-2 text-sm text-error">
+                <Warning size={16} weight="fill" /> {errors.file.message}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Extra extras={bases} setExtras={setBases} />
-          <Extra extras={extras} setExtras={setExtras} />
+          <CreateProductItem items={bases} setItems={setBases} type="base" />
+          <CreateProductItem items={extras} setItems={setExtras} type="extra" />
         </div>
       </div>
     </form>
   );
 };
 
-export default AddProduct;
+export default CreateProduct;

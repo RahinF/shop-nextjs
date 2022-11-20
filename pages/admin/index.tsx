@@ -7,6 +7,7 @@ const Admin = () => {
     <>
       <Head>
         <title>Admin</title>
+        <meta name="description" content="admin panel containing restricted actions"/>
       </Head>
 
       <header className="mb-10 flex justify-between">

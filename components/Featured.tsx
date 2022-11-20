@@ -44,6 +44,7 @@ const Featured = () => {
             alt={slide.alt}
             width={slide.width}
             height={slide.height}
+            priority
           />
         ))}
       </Slider>

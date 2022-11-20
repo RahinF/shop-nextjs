@@ -1,4 +1,5 @@
 import { dehydrate, QueryClient } from "@tanstack/react-query";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -20,6 +21,11 @@ const Products = () => {
 
   return (
     <div className="flex flex-col gap-4 overflow-x-auto">
+      <Head>
+        <title>Admin - Products</title>
+        <meta name="description" content="shows products and actions to create and modify them" />
+      </Head>
+
       <header className="flex items-center justify-between">
         <h1 className="text-3xl font-bold uppercase">products</h1>
         <Link href="/admin/products/create" className="btn my-2">

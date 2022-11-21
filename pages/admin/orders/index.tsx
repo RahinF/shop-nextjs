@@ -1,5 +1,6 @@
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import Head from "next/head";
+import Link from "next/link";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import orderStatus from "../../../data/orderStatus";
@@ -33,7 +34,10 @@ const Orders = () => {
     <div className="flex flex-col gap-4 overflow-x-auto">
       <Head>
         <title>Admin - Orders</title>
-        <meta name="description" content="shows orders and actions to create and modify them" />
+        <meta
+          name="description"
+          content="shows orders and actions to create and modify them"
+        />
       </Head>
 
       <header>
@@ -59,7 +63,10 @@ const Orders = () => {
               <td>{order.address}</td>
               <td>{order.status}</td>
               <td>{toPrice(order.total)}</td>
-              <td>
+              <td className="flex gap-2">
+                <Link href={`/orders/${order._id}`} className="btn">
+                  view
+                </Link>
                 <button
                   className="btn"
                   disabled={order.status === status[status.length - 1]}

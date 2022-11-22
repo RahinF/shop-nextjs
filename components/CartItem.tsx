@@ -86,6 +86,7 @@ const CartItem = ({ cartItem, setTotal }: ICartItem) => {
 
       <div className="flex items-center gap-4">
         <button
+          aria-label="increase quantity"
           className="btn-primary btn-circle btn"
           onClick={handleIncreaseQuantity}
         >
@@ -93,6 +94,7 @@ const CartItem = ({ cartItem, setTotal }: ICartItem) => {
         </button>
         <span className="text-lg font-bold">{quantity}</span>
         <button
+          aria-label="decrease quantity"
           className="btn-primary btn-circle btn"
           onClick={handleDecreaseQuantity}
         >

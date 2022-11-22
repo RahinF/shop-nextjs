@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { Warning } from "phosphor-react";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -40,7 +41,7 @@ const CreateProductItem = ({ items, setItems, type }: Props) => {
   };
 
   return (
-    <div className="w-full">
+    <div className="flex w-full flex-col gap-2">
       <div className="flex items-end gap-2">
         <div className="basis-full">
           <label
@@ -52,7 +53,11 @@ const CreateProductItem = ({ items, setItems, type }: Props) => {
           <input
             id={`${type}-text`}
             type="text"
-            className="input-bordered input w-full capitalize"
+            aria-required
+            aria-invalid={errors.text ? "true" : "false"}
+            className={clsx("input-bordered input", {
+              "border-error focus:border-error focus:ring-error": errors.text,
+            })}
             {...register("text", {
               required: `${type[0].toUpperCase() + type.slice(1)} is required.`,
             })}
@@ -65,15 +70,27 @@ const CreateProductItem = ({ items, setItems, type }: Props) => {
           >
             price
           </label>
-          <input
-            id={`${type}-price`}
-            type="number"
-            min={0}
-            max={100}
-            step={0.01}
-            className="input-bordered input w-28"
-            {...register("price", { required: "Price is required." })}
-          />
+          <div
+            className={clsx(
+              "input-bordered input flex w-28 items-center pr-1 pl-0",
+              {
+                "border-error focus:border-error focus:ring-error":
+                  errors.price,
+              }
+            )}
+          >
+            <span className="px-2">$</span>
+            <input
+              id={`${type}-price`}
+              type="number"
+              min={0}
+              step={0.01}
+              aria-required
+              aria-invalid={errors.price ? "true" : "false"}
+              className="h-full w-full"
+              {...register("price", { required: "Price is required." })}
+            />
+          </div>
         </div>
         <button className="btn" type="button" onClick={handleSubmit(addItem)}>
           add
@@ -81,7 +98,10 @@ const CreateProductItem = ({ items, setItems, type }: Props) => {
       </div>
 
       {(errors.text || errors.price) && (
-        <span className="mt-2 flex items-center gap-2 text-sm text-error">
+        <span
+          role="alert"
+          className="mt-2 flex items-center gap-2 text-sm text-error"
+        >
           <Warning size={16} weight="fill" />
           {errors.text?.message || errors.price?.message}
         </span>

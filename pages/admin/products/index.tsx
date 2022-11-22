@@ -29,7 +29,7 @@ const Products = () => {
       <header className="flex items-center justify-between">
         <h1 className="text-3xl font-bold uppercase">products</h1>
         <Link href="/admin/products/create" className="btn my-2">
-          add product
+          create product
         </Link>
       </header>
 

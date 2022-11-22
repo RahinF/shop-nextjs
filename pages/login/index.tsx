@@ -46,10 +46,7 @@ const Login = () => {
     <div className="grid min-h-screen place-items-center p-4">
       <Head>
         <title>Admin Login</title>
-        <meta
-          name="description"
-          content="login to access admin actions"
-        />
+        <meta name="description" content="login to access admin actions" />
       </Head>
 
       <div className="flex w-full max-w-md flex-col items-center border py-10 px-4">
@@ -66,9 +63,9 @@ const Login = () => {
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="flex flex-col">
-            <label htmlFor="username" className="label">
+            <label htmlFor="username" className="label font-medium capitalize">
               <span>
-                Username{" "}
+                username{" "}
                 <span aria-hidden className="text-error">
                   *
                 </span>
@@ -97,9 +94,12 @@ const Login = () => {
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="password" className="label flex justify-between">
+            <label
+              htmlFor="password"
+              className="label flex justify-between font-medium capitalize"
+            >
               <span>
-                Password{" "}
+                password{" "}
                 <span aria-hidden className="text-error">
                   *
                 </span>

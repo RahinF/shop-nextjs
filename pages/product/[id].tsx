@@ -83,13 +83,10 @@ const Product = () => {
   if (!product) return <p>loading...</p>;
 
   return (
-    <article className="flex flex-col items-center lg:flex-row lg:justify-evenly lg:gap-10">
+    <article className="flex flex-col lg:flex-row lg:justify-evenly lg:gap-10">
       <Head>
         <title>{product.title}</title>
-        <meta
-          name="description"
-          content={`${product.title} product page`}
-        />
+        <meta name="description" content={`${product.title} product page`} />
       </Head>
       <div>
         <Image
@@ -101,7 +98,7 @@ const Product = () => {
         />
       </div>
 
-      <div className="flex flex-col gap-10 max-w-xl">
+      <div className="flex max-w-xl flex-col gap-10">
         <header>
           <h1 className="text-3xl font-bold uppercase">{product.title}</h1>
           <span className="text-2xl font-bold uppercase text-primary">
@@ -111,7 +108,7 @@ const Product = () => {
         </header>
         <section className="flex flex-col gap-2">
           <h2 className="text-xl font-bold">Select a base</h2>
-          <div className="flex gap-8 flex-wrap">
+          <div className="flex flex-wrap gap-8">
             {product.bases.map((base) => (
               <button key={base.text} onClick={() => handleBaseOnClick(base)}>
                 <div

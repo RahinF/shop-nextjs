@@ -1,8 +1,9 @@
+import clsx from "clsx";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { Warning } from "phosphor-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import CreateProductItem from "../../../../components/CreateProductItem";
@@ -30,6 +31,9 @@ const CreateProduct = () => {
     formState: { errors },
   } = useForm<ICreatePostForm>();
 
+  const { createProductMutation } = useProduct();
+  const { uploadFileMutation } = useFileUpload();
+
   const [extras, setExtras] = useState<IExtra[] | []>([
     {
       text: "Peri-peri Sauce Swirl",
@@ -44,6 +48,7 @@ const CreateProduct = () => {
     { text: "Cheesy Crust", price: 349 },
   ]);
 
+  const [basesError, setBasesError] = useState<boolean>(false);
   const [filePreview, setFilePreview] = useState<string | undefined>(undefined);
 
   const createFilePreview = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,11 +61,8 @@ const CreateProduct = () => {
     setFilePreview(fileURL);
   };
 
-  const { createProductMutation } = useProduct();
-  const { uploadFileMutation } = useFileUpload();
-
   const onSubmit = async (data: ICreatePostForm) => {
-    if (!bases.length) return;
+    if (!bases.length) return setBasesError(true);
 
     const { title, description, file, price } = data;
 
@@ -68,7 +70,7 @@ const CreateProduct = () => {
     formData.append("file", file[0]);
     formData.append(
       "upload_preset",
-      process.env.CLOUDINARY_UPLOAD_PRESET as string
+      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET as string
     );
 
     try {
@@ -91,6 +93,10 @@ const CreateProduct = () => {
     }
   };
 
+  useEffect(() => {
+    if (bases.length) return setBasesError(false);
+  }, [bases.length]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Head>
@@ -99,7 +105,7 @@ const CreateProduct = () => {
       </Head>
 
       <header className="flex justify-between">
-        <h1 className="text-3xl font-bold uppercase">add a new product</h1>
+        <h1 className="text-3xl font-bold uppercase">create a new product</h1>
         <button className="btn-primary btn">create</button>
       </header>
 
@@ -112,13 +118,21 @@ const CreateProduct = () => {
             <input
               id="title"
               type="text"
-              className="input-bordered input w-full"
+              aria-required
+              aria-invalid={errors.title ? "true" : "false"}
+              className={clsx("input-bordered input", {
+                "border-error focus:border-error focus:ring-error":
+                  errors.title,
+              })}
               {...register("title", {
                 required: "Title is required.",
               })}
             />
             {errors.title && (
-              <span className="mt-2 flex items-center gap-2 text-sm text-error">
+              <span
+                role="alert"
+                className="mt-2 flex items-center gap-2 text-sm text-error"
+              >
                 <Warning size={16} weight="fill" />
                 {errors.title.message}
               </span>
@@ -135,13 +149,21 @@ const CreateProduct = () => {
             <textarea
               id="description"
               rows={4}
-              className="textarea-bordered textarea w-full"
+              aria-required
+              aria-invalid={errors.description ? "true" : "false"}
+              className={clsx("textarea-bordered textarea", {
+                "border-error focus:border-error focus:ring-error":
+                  errors.description,
+              })}
               {...register("description", {
                 required: "Description is required.",
               })}
             />
             {errors.description && (
-              <span className="mt-2 flex items-center gap-2 text-sm text-error">
+              <span
+                role="alert"
+                className="mt-2 flex items-center gap-2 text-sm text-error"
+              >
                 <Warning size={16} weight="fill" />
                 {errors.description.message}
               </span>
@@ -155,21 +177,34 @@ const CreateProduct = () => {
             >
               base price
             </label>
-            <div className="input-bordered input flex items-center">
+            <div
+              className={clsx(
+                "input-bordered input flex items-center pr-1 pl-0",
+                {
+                  "border-error focus:border-error focus:ring-error":
+                    errors.price,
+                }
+              )}
+            >
               <span className="px-2">$</span>
               <input
                 id="starting-base-price"
                 className="h-full w-full"
                 type="number"
-                step="0.01"
                 min={0}
+                step="0.01"
+                aria-required
+                aria-invalid={errors.price ? "true" : "false"}
                 {...register("price", {
                   required: "Base price is required.",
                 })}
               />
             </div>
             {errors.price && (
-              <span className="mt-2 flex items-center gap-2 text-sm text-error">
+              <span
+                role="alert"
+                className="mt-2 flex items-center gap-2 text-sm text-error"
+              >
                 <Warning size={16} weight="fill" />
                 {errors.price.message}
               </span>
@@ -183,7 +218,11 @@ const CreateProduct = () => {
             <input
               id="image"
               type="file"
-              className="file-input input-bordered w-full"
+              className={clsx("file-input input-bordered", {
+                "border-error focus:border-error focus:ring-error": errors.file,
+              })}
+              aria-required
+              aria-invalid={errors.file ? "true" : "false"}
               {...register("file", {
                 required: "Image is required.",
                 onChange: (event) => createFilePreview(event),
@@ -202,16 +241,36 @@ const CreateProduct = () => {
             )}
 
             {errors.file && (
-              <span className="mt-2 flex items-center gap-2 text-sm text-error">
+              <span
+                role="alert"
+                className="mt-2 flex items-center gap-2 text-sm text-error"
+              >
                 <Warning size={16} weight="fill" /> {errors.file.message}
               </span>
             )}
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <CreateProductItem items={bases} setItems={setBases} type="base" />
-          <CreateProductItem items={extras} setItems={setExtras} type="extra" />
+        <div className="flex basis-1/2 flex-col gap-2 sm:flex-row">
+          <div className="basis-1/2">
+            <CreateProductItem items={bases} setItems={setBases} type="base" />
+
+            {basesError && (
+              <span
+                role="alert"
+                className="mt-2 flex items-center gap-2 text-sm text-error"
+              >
+                <Warning size={16} weight="fill" /> Must have at least 1 base.
+              </span>
+            )}
+          </div>
+          <div className="basis-1/2">
+            <CreateProductItem
+              items={extras}
+              setItems={setExtras}
+              type="extra"
+            />
+          </div>
         </div>
       </div>
     </form>

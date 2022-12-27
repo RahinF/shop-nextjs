@@ -3,13 +3,13 @@ import IProduct, { ICreateProduct, IProductRequest } from "../types/IProduct";
 
 export const fetchProducts = async (): Promise<IProduct[]> => {
   return axios
-    .get("http://localhost:3000/api/products")
+    .get("/api/products")
     .then((response) => response.data);
 };
 
 export const fetchProduct = async (id: string): Promise<IProduct> => {
   return axios
-    .get(`http://localhost:3000/api/products/${id}`)
+    .get(`/api/products/${id}`)
     .then((response) => response.data);
 };
 

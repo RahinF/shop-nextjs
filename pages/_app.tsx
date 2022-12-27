@@ -3,7 +3,6 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { AppProps } from "next/app";
 import { useState } from "react";
 import Layout from "../components/Layout";
@@ -23,7 +22,6 @@ const App = ({ Component, pageProps }: AppProps) => {
           </Layout>
         </Hydrate>
       )}
-      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 };

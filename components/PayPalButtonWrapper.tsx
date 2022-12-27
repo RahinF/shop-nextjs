@@ -14,7 +14,7 @@ const PayPalButtonWrapper = ({
   showSpinner,
   createOrder,
 }: IPayPalButtonWrapper) => {
-  const style = { height: 48, layout: "vertical" };
+  const style = { height: 48, layout: "vertical" } as any;
   const currency = "AUD";
 
   const [{ options, isPending }, dispatch] = usePayPalScriptReducer();
@@ -55,7 +55,7 @@ const PayPalButtonWrapper = ({
             });
         }}
         onApprove={(data, actions) => {
-          return actions.order.capture().then((details) => {
+          return actions.order!.capture().then((details) => {
             const shipping = details.purchase_units[0].shipping;
 
             createOrder({

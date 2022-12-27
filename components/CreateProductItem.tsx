@@ -10,12 +10,10 @@ interface IItem {
   price: number;
 }
 
-type TItemType = "base" | "extra";
-
 interface Props {
   items: IItem[];
   setItems: React.Dispatch<React.SetStateAction<[] | IItem[]>>;
-  type: TItemType;
+  type: "base" | "extra";
 }
 
 const CreateProductItem = ({ items, setItems, type }: Props) => {
